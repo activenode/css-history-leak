@@ -1,0 +1,13 @@
+
+version: '2'
+
+services:
+  history_leak:
+    image: history_leak:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 7654:9091

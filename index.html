@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script async defer src="./client.js"></script>
+    <style>
+        body {
+            margin:0; 
+            padding: 0;
+            text-align: center;
+
+        }
+
+        .lock-layer {
+            display:block;
+            width:100vw;
+            height:100vh;
+            background:#222;
+            position: fixed;
+            top:0; left:0;
+        }
+
+        .lock-layer__text {
+            display:block;
+            color:white;
+            font-size:70px;
+            font-family: Courier New, Courier, monospace;
+            margin:10px;
+            position: absolute;
+            top:50%;
+            transform:translateY(-50%);
+            width:100%;
+            text-align: center;
+        }
+        body:not(.game-started) .lock-layer__text:last-child {
+            display:none;
+        }
+
+        body.game-started:not(.game-ended) .lock-layer {
+            display:none;
+        }
+
+
+        body.game-started.game-ended .lock-layer__text:not(:last-child) {
+            display:none;
+        }
+
+        #controls {
+            width:100%;
+            display:block;
+            text-align: center;
+            position: absolute;
+            bottom:20px;
+        }
+        #controls .ctrl {
+            display:inline-block;
+            text-align: center;
+            outline: none;
+        }
+        .ctrl .ui {
+            width:160px; height:160px;
+            background:red;
+            margin-bottom:15px;
+            border-radius: 50%;
+            background:white;
+            position: relative;
+            box-sizing:border-box;
+            background:rgba(255, 255, 255, 0.2);
+        }
+        .ui:after {
+            box-sizing:border-box;
+            display: block;
+            content: "";
+            position: absolute;
+            left: 0;
+            width:70%;
+            left:15%;
+            top:15%;
+            height:70%;
+            border-radius:50%;
+            background:#444;
+            border:30px solid #263238;
+        }
+        .ctrl.up .ui:after {
+            border-color:#a0ff33;
+        }
+        #controls .ctrl:after {
+            content: "Arrow Down";
+            font-family:Arial, Arial, Helvetica, sans-serif;
+            font-size:11px;
+            color:white;
+            display: block;
+            opacity:0.9;
+            -webkit-font-smoothing: antialiased;
+        }
+        #controls .ctrl:first-child {
+            margin-right:20px;
+        }
+        #controls .ctrl:first-child:after {
+            content: "Arrow Up";
+        }
+        .ctrl button {
+            width:140px; height:140px;
+            display:inline-block;
+            border-radius: 50%;
+            border:0;
+            margin-bottom: 20px;
+        }
+
+        #scene {
+            width:100vw;
+            height:100vh;
+            position: relative;
+            background: #00c6ff; /* fallback for old browsers */
+            background: -webkit-linear-gradient(to left, #00c6ff , #0072ff); /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to left, #00c6ff , #0072ff); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+                    
+        }
+
+        #linkct {
+            display: block;
+            position: relative;
+            width:100%;
+        }
+
+        a.link {
+            margin-top:80px;
+            display:block;
+            pointer-events: none;
+            transition:all 500ms ease;
+            position: absolute;
+            right: 0;
+            transform:scale(0.2);
+            opacity:0;
+        }
+        a.link svg {
+            display:inline-block;
+            transform:scale(2);
+            stroke:white;
+            box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+            background:rgba(255,255,255,0.05);
+            border-radius: 50%;
+            transition:all 300ms ease;
+            stroke:#a0ff33;
+        }
+
+        a.link:visited svg {
+            stroke:#263238;
+        }
+
+        a.link.show {
+            transform:scale(1);
+            opacity:1;
+            right:calc(50% - 50px);
+        }
+
+        a.link.show.hide {
+            transform:scale(0);
+            opacity:0;
+            right:130%;
+            visibility: hidden;
+        }
+
+        
+    </style>
+</head>
+<body tabindex="0">
+    <div id="scene">
+        <div id="linkct">
+            <a class="link skeleton" href="">
+                <svg width="100" height="100"><circle cx="50" cy="50" r="30" fill="#444"  stroke-width="20" /></svg>
+            </a>
+        </div>
+        <div id="controls">
+            <div class="ctrl up" role="button" tabindex="0">
+                <div class="ui"></div>
+            </div>
+            <div class="ctrl down" role="button" tabindex="0">
+                <div class="ui"></div>
+            </div>
+        </div>
+    </div>
+    <div class="lock-layer">
+        <div class="lock-layer__text">Click to start</div>
+        <div class="lock-layer__text"><strong>Thank you!</strong></div>
+    </div>
+    
+    <script>
+        var lockLayer = document.querySelector('.lock-layer');
+        var gameStarter = function(){
+            startGame();
+            lockLayer.removeEventListener('click', gameStarter);
+        };
+        lockLayer.addEventListener('click', gameStarter);
+    </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Results</title>
+    <style>
+    body {
+        margin:0; 
+        padding: 0;
+        text-align: center;
+    }
+
+     #scene {
+        width:100vw;
+        min-height:100vh;
+        position: relative;
+        background: #333; /* fallback for old browsers */
+                
+    }
+
+    .stats {
+        list-style:none;
+        margin:0;
+        padding:2rem;
+        text-align: left;
+        font-family: Courier New, Courier, monospace;
+        color:white;
+        font-weight:600;
+        opacity:1;
+        transition: opacity 0.4s ease;
+    }
+    .stats li {
+        margin-bottom:1.25rem;
+    }
+    .stats span {
+        color:yellow;
+        position: relative;
+        z-index:2;
+        font-size:25px;
+        background:grey;
+        padding:1px 4px;
+        margin-left:-5px;
+    }
+    .stats .bar {
+        display:block;
+        height:3rem;
+        background:#FB3640;
+        position: relative;
+        margin-top:-8px;
+        border-right:10px solid black;
+        transition:width 1.5s ease;
+        box-shadow:4px 8px 0 rgba(0,0,0,0.3);
+    }
+    .stats .bar:after {
+        position: absolute;
+        right:10px;
+        bottom:2px;
+        color:white;
+        content: attr(data-val);
+        font-size:200%;
+        font-weight:normal;
+    }
+
+    .stats.not-ready li .bar {
+        width:0 !important;
+    }
+    .stats.not-ready {
+        opacity:0 !important;
+    }
+    </style>
+</head>
+<body>
+    <div id="scene">
+        <ul id="stats" class="stats not-ready">
+
+        </ul>
+    </div>
+    
+    <script>
+        const srcList=[];
+        const userData={};
+        const binLength = userData.length;
+
+        var maxVotesTotal = 1; //the maximum count for ONE single entry
+
+        function drawGroups(groupsArr){
+            groupsArr = groupsArr.sort(function(a,b){
+                if (a.votes < b.votes) {
+                    return 1;
+                }
+                if (a.votes > b.votes) {
+                    return -1;
+                }
+
+                return 0;
+            });
+
+            groupsArr.forEach(function(group){
+                var percentage = (group.votes/maxVotesTotal) * 100;
+                var li = document.createElement('li');
+                li.innerHTML = '<span>'+group.group+'</span><div style="width:'+percentage+'%" class="bar" data-val="'+group.votes+'"></div>';
+                stats.appendChild(li);
+            });
+
+            requestAnimationFrame(function(){
+                stats.classList.remove('not-ready');
+            })
+        }
+
+        function collapseGroups(arrayWithGroupNames){
+            var run = 0;
+            while (run < arrayWithGroupNames.length) {
+                var current = arrayWithGroupNames.shift();
+
+                var noDuplicatesArray = [];
+                arrayWithGroupNames.forEach(function(item){
+                    if (current.group!=item.group) {
+                        noDuplicatesArray.push(item);
+                    } else {
+                        current.votes += item.votes;
+                    }
+                });
+
+                noDuplicatesArray.push(current);
+                arrayWithGroupNames = noDuplicatesArray;
+                run++;
+            }
+
+            for (var z=0; z<arrayWithGroupNames.length; z++) {
+                maxVotesTotal = Math.max(maxVotesTotal, arrayWithGroupNames[z].votes);
+            }
+
+            return arrayWithGroupNames;
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            requestAnimationFrame(function(){
+                requestAnimationFrame(function(){
+                    userData.stats.forEach(function(_,index){
+                        userData.stats[index] = userData.stats[index].split('');
+                    });
+
+                    srcList.forEach(function(_,index){
+                        srcList[index].votes = 0;
+                        if (!srcList[index].group) {
+                            srcList[index].group = srcList[index].label;
+                        }
+                        for (var i=0; i<userData.stats.length; i++) {
+                            if (userData.stats[i][index]=='1') {
+                                srcList[index].votes++;
+                            }
+                        }
+
+                    });
+
+                    drawGroups(collapseGroups(srcList));
+                })
+            })
+        });
+    </script>
+</body>
+</html>
