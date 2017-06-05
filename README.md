@@ -1,4 +1,4 @@
-#CSS History Leak
+# CSS History Leak
 
 tl;dr: You can steal your users browser history via CSS and some minor JS.
 
